@@ -26,8 +26,13 @@ public static class Router
                 response = ConnectToRoom.Execute(message, client);
                 break;
             case "StartGameInRoom":
+                response = StartGameInRoom.Execute(message, client);
                 break;
             case "NextQuestionInRoom":
+                response = NextQuestionInRoom.Execute(message, client);
+                break;
+            case "Answer":
+                response = Answer.Execute(message, client);
                 break;
             case "GetQuestionStats":
                 break;

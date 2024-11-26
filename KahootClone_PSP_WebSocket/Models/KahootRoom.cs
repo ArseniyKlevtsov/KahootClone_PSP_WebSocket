@@ -5,6 +5,7 @@ public class KahootRoom
     public string Name { get; set; }
     public string CreatorId { get; set; }
     public bool IsOpen { get; set; }
+    public int QuestionIndex {  get; set; }
 
     public List<string> PlayerIds { get; set; }
     public List<KahootQuestion> Questions { get; set; }
@@ -18,5 +19,6 @@ public class KahootRoom
         Questions = new List<KahootQuestion>();
         PlayersAnswers = new List<KahootPlayerAnswer>();
         IsOpen = false;
+        QuestionIndex = 0;
     }
 }

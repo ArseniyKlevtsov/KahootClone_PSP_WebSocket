@@ -16,22 +16,37 @@ public static class ConnectToRoom
         var dto = KahootDtoConvertor.ConvertToDto<OpenRoomDto>(message.Data.ToString());
 
         var room = UnitOfWork.Instance.Rooms.FirstOrDefault(r => r.Name == dto.RoomName);
-        if (room == null)
-        {
-            throw new ArgumentException($"Room {dto.RoomName} not found");
-        }
 
+        CheckRoom(room);
+        CheckPlayer(client);
 
-        room.PlayerIds.Add(client.ID);
+        room!.PlayerIds.Add(client.ID);
 
         response = new Message("ConectedToRoom", CreateResponse(room));
-        return new HandlerResponse(response);
+        var handlerResponsse = new HandlerResponse(response);
+        foreach (var id in room.PlayerIds)
+        {
+            handlerResponsse.RecipientIds.Add(id);
+        }
+        return handlerResponsse;
     }
 
+    private static void CheckRoom(KahootRoom? room)
+    {
+        if (room == null)
+        {
+            throw new ArgumentException($"Room {room.Name} not found");
+        }
+
+        if (room.IsOpen == false)
+        {
+            throw new ArgumentException($"Room {room.Name} closed for connecting");
+        }
+    }
     private static void CheckPlayer(KahootServer client)
     {
         var player = UnitOfWork.Instance.Players.FirstOrDefault(p => p.Id == client.ID);
-        if (player.Name == null)
+        if (player!.Name == null)
         {
             throw new ArgumentException($"Player with id {client.ID} don't have name");
         }
@@ -51,7 +66,7 @@ public static class ConnectToRoom
             {
                 continue;
             }
-            response.UserNames.Add(player.Name);
+            response.UserNames.Add(player.Name!);
         }
         return response;
     }
