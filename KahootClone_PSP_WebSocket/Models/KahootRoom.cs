@@ -3,7 +3,8 @@
 public class KahootRoom
 {
     public string Name { get; set; }
-    public string CreatorId { get; }
+    public string CreatorId { get; set; }
+    public bool IsOpen { get; set; }
 
     public List<string> PlayerIds { get; set; }
     public List<KahootQuestion> Questions { get; set; }
@@ -13,5 +14,9 @@ public class KahootRoom
     {
         Name = name;
         CreatorId = creatorId;
+        PlayerIds = new List<string>();
+        Questions = new List<KahootQuestion>();
+        PlayersAnswers = new List<KahootPlayerAnswer>();
+        IsOpen = false;
     }
 }

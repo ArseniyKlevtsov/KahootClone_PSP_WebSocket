@@ -1,34 +1,32 @@
 ﻿using KahootClone_PSP_WebSocket.DTOs;
-using KahootClone_PSP_WebSocket.Models;
 using KahootClone_PSP_WebSocket.Repositories;
 using KahootClone_PSP_WebSocket.Services;
 using KahootClone_PSP_WebSocket.WebSocketServices;
 
 namespace KahootClone_PSP_WebSocket.Handlers;
 
-public class AddQuestionToRoom
+public class OpenRoom
 {
     public static HandlerResponse Execute(Message message, KahootServer client)
     {
         Message? response = null;
 
-        var dto = KahootDtoConvertor.ConvertToDto<AddQuestionToRoomDto>(message.Data.ToString());
+        var dto = KahootDtoConvertor.ConvertToDto<OpenRoomDto>(message.Data.ToString());
 
         var room = UnitOfWork.Instance.Rooms.FirstOrDefault(r => r.Name == dto.RoomName);
         if (room == null)
         {
-            throw new ArgumentException("Room with ID {client.ID} not found");
+            throw new ArgumentException($"Room with id {client.ID} not found");
         }
 
-        if (room.CreatorId != dto.CreatorId)
+        if(room.CreatorId != dto.CreatorId)
         {
             throw new ArgumentException($"Access denied");
         }
 
-        var question = new KahootQuestion(dto.Question, dto.CorrectAnswerIndex, dto.Answers);
-        room.Questions.Add(question);
+        room.IsOpen = true;
 
-        response = new Message("QuestionCreated", question);
+        response = new Message("RoomOpenned", room);
         return new HandlerResponse(response);
     }
 }

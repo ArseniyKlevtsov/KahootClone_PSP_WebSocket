@@ -68,7 +68,6 @@ public class KahootServer : WebSocketBehavior
 
     private Message ReadMessage(string data)
     {
-
         Message? message;
         message = JsonConvert.DeserializeObject<Message>(data);
         if (message == null)

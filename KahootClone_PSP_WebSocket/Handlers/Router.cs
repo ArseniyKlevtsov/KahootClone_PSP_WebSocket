@@ -17,10 +17,13 @@ public static class Router
                 response = CreateRoom.Execute(message, client);
                 break;
             case "AddQuestionToRoom":
+                response = AddQuestionToRoom.Execute(message, client);
                 break;
             case "OpenRoom":
+                response = OpenRoom.Execute(message, client);
                 break;
             case "ConnectToRoom":
+                response = ConnectToRoom.Execute(message, client);
                 break;
             case "StartGameInRoom":
                 break;

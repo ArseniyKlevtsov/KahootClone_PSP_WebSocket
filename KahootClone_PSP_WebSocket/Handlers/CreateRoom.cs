@@ -19,7 +19,7 @@ public static class CreateRoom
         var room = new KahootRoom(dto.Name, client.ID);
         UnitOfWork.Instance.Rooms.Add(room);
 
-        response = new Message("RoomCreated", dto.Name);
+        response = new Message("RoomCreated", room);
 
         return new HandlerResponse(response);
     }
