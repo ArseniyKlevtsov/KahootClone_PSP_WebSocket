@@ -37,7 +37,8 @@ public static class Router
             case "ShowQuestionStats":
                 response = ShowQuestionStats.Execute(message, client);
                 break;
-            case "GetGameStats":
+            case "EndGameInRoom":
+                response = EndGameInRoom.Execute(message, client);
                 break;
             default:
                 response = DefaultResponse.Execute(message);

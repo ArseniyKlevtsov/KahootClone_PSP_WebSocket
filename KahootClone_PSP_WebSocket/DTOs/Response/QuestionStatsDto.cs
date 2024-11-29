@@ -3,11 +3,11 @@
 public class QuestionStatsDto
 {
     public string CorrectAnswer { get; set; }
-    public List<PlayerStatsDto> PlayerScoreBoard { get; set; }
+    public List<PlayerQuestionStatsDto> PlayerScoreBoard { get; set; }
 
     public QuestionStatsDto(string correctAnswer)
     {
         CorrectAnswer = correctAnswer;
-        PlayerScoreBoard = new List<PlayerStatsDto>();
+        PlayerScoreBoard = new List<PlayerQuestionStatsDto>();
     }
 }

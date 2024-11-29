@@ -26,8 +26,7 @@ public class NextQuestionInRoom
         }
 
         var index = room.QuestionIndex;
-        var nexQuestion = room.Questions[index];
-        room.QuestionIndex++;
+        var nexQuestion = room.Questions[index];     
 
         var question = new QuestionResponseDto(nexQuestion.Id, nexQuestion.Question, nexQuestion.Answers);
         response = new Message("NextQuestion", question);

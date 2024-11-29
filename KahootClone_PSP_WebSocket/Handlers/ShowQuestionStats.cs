@@ -13,12 +13,13 @@ public class ShowQuestionStats
     {
         Message? response = null;
 
-        var dto = KahootDtoConvertor.ConvertToDto<NextQuestionInRoomDto>(message.Data.ToString());
+        var dto = KahootDtoConvertor.ConvertToDto<ShowQuestionStatsDto>(message.Data.ToString());
 
         var room = GetRoomByName(dto.RoomName);
         CheckCreator(room, dto.CreatorId);
 
         var questionStatsDto = CreateRespose(room);
+        room.QuestionIndex++;
 
         response = new Message("QuestionStats", questionStatsDto);
 
@@ -79,7 +80,7 @@ public class ShowQuestionStats
         return QuestionResponseDto;
     }
 
-    private static PlayerStatsDto? CreatePlayerStats(KahootPlayerAnswer answer, KahootQuestion question, DateTime minTime, double maxAnswerTime)
+    private static PlayerQuestionStatsDto? CreatePlayerStats(KahootPlayerAnswer answer, KahootQuestion question, DateTime minTime, double maxAnswerTime)
     {
         double coef = 1;
         var player = UnitOfWork.Instance.Players.FirstOrDefault(p => p.Id == answer.PlayerId);
@@ -87,8 +88,7 @@ public class ShowQuestionStats
         {
             return null;
         }
-        var playerStats = new PlayerStatsDto();
-
+        var playerStats = new PlayerQuestionStatsDto();
 
         playerStats.PlayerName = player.Name!;
         playerStats.PlayerAnswer = question.Answers[answer.AnswerIndex];
@@ -105,9 +105,13 @@ public class ShowQuestionStats
             playerStats.IsCorrectAnswer = true;
         }
 
-        playerStats.QuestionScore = (int)Math.Round(1000 * coef);
-        player.Score += playerStats.QuestionScore;
-        playerStats.TotalScore = player.Score;
+        if(playerStats.IsCorrectAnswer)
+        {
+            playerStats.QuestionScore = (int)Math.Round(1000 * coef);
+            player.Score += playerStats.QuestionScore;
+            playerStats.TotalScore = player.Score;
+        }
+
         return playerStats;
     }
 }
