@@ -34,7 +34,8 @@ public static class Router
             case "Answer":
                 response = Answer.Execute(message, client);
                 break;
-            case "GetQuestionStats":
+            case "ShowQuestionStats":
+                response = ShowQuestionStats.Execute(message, client);
                 break;
             case "GetGameStats":
                 break;

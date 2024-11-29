@@ -16,12 +16,14 @@ public static class ConnectToRoom
         var dto = KahootDtoConvertor.ConvertToDto<OpenRoomDto>(message.Data.ToString());
 
         var room = UnitOfWork.Instance.Rooms.FirstOrDefault(r => r.Name == dto.RoomName);
+        var player = UnitOfWork.Instance.Players.FirstOrDefault(p => p.Id == client.ID);
 
         CheckRoom(room);
-        CheckPlayer(client);
+        CheckPlayer(player!, room!);
 
+        player!.Score = 0;
         room!.PlayerIds.Add(client.ID);
-
+           
         response = new Message("ConectedToRoom", CreateResponse(room));
         var handlerResponsse = new HandlerResponse(response);
         foreach (var id in room.PlayerIds)
@@ -35,7 +37,7 @@ public static class ConnectToRoom
     {
         if (room == null)
         {
-            throw new ArgumentException($"Room {room.Name} not found");
+            throw new ArgumentException($"Room not found");
         }
 
         if (room.IsOpen == false)
@@ -43,12 +45,27 @@ public static class ConnectToRoom
             throw new ArgumentException($"Room {room.Name} closed for connecting");
         }
     }
-    private static void CheckPlayer(KahootServer client)
+    private static void CheckPlayer(KahootPlayer player, KahootRoom room)
     {
-        var player = UnitOfWork.Instance.Players.FirstOrDefault(p => p.Id == client.ID);
         if (player!.Name == null)
         {
-            throw new ArgumentException($"Player with id {client.ID} don't have name");
+            throw new ArgumentException($"Player with id {player.Id} don't have name");
+        }
+
+        var IsPlayerWithNameExist = false;
+
+        foreach (var id in room.PlayerIds)
+        {
+            var p = UnitOfWork.Instance.Players.FirstOrDefault(p => p.Id == id);
+            if (p.Name == player.Name)
+            {
+                IsPlayerWithNameExist = true;
+            }
+        }
+
+        if (IsPlayerWithNameExist)
+        {
+            throw new ArgumentException($"Player with name {player.Name} exist in room");
         }
     }
 
