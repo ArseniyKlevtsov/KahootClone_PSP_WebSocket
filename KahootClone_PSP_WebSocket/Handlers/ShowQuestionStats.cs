@@ -91,7 +91,7 @@ public class ShowQuestionStats
         var playerStats = new PlayerQuestionStatsDto();
 
         playerStats.PlayerName = player.Name!;
-        playerStats.PlayerAnswer = question.Answers[answer.AnswerIndex];
+        playerStats.PlayerAnswerIndex = answer.AnswerIndex;
 
         if (maxAnswerTime != 0)
         {

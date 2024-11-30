@@ -26,7 +26,10 @@ public class Answer
 
         response = new Message("AnswerSaved", kahootPlayerAnswer);
 
-        return new HandlerResponse(response);
+        var handlerResponse = new HandlerResponse(response);
+        handlerResponse.RecipientIds.Add(client.ID);
+        handlerResponse.RecipientIds.Add(room.CreatorId);
+        return handlerResponse;
     }
 
     private static void CheckClient(KahootRoom room, string clientId)
