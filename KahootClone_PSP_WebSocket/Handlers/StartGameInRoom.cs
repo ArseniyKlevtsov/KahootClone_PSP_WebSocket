@@ -22,6 +22,12 @@ public class StartGameInRoom
         room.IsOpen = false;
 
         response = new Message("GameStartedInRoom", room);
-        return new HandlerResponse(response);
+        var handlerResponsse = new HandlerResponse(response);
+        foreach (var id in room.PlayerIds)
+        {
+            handlerResponsse.RecipientIds.Add(id);
+        }
+        handlerResponsse.RecipientIds.Add(client.ID);
+        return handlerResponsse;
     }
 }

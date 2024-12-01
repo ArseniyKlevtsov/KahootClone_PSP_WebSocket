@@ -20,7 +20,7 @@ internal class EndGameInRoom
 
         var endGameResponseDto = CreateRespose(room);
 
-        response = new Message("EngGameStats", endGameResponseDto);
+        response = new Message("EndGameStats", endGameResponseDto);
 
         var handlerResponsse = new HandlerResponse(response);
         handlerResponsse.AddRecipientsFromRoom(room);

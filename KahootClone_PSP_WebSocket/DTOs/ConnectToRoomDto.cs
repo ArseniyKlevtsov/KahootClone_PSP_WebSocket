@@ -2,5 +2,5 @@
 
 public class ConnectToRoomDto
 {
-    public string Name { get; set; }
+    public string RoomName { get; set; }
 }

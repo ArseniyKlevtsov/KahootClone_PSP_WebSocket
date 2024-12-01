@@ -55,32 +55,64 @@ public class ShowQuestionStats
 
         var questionAnswers = room.PlayersAnswers.Where(pa => pa.QuestionId == question.Id);
 
-        var minTime = questionAnswers.Min(qa => qa.AnswerTime);
-        var maxTime = questionAnswers.Max(qa => qa.AnswerTime);
+        var minTime = ((DateTimeOffset)questionAnswers.Min(qa => qa.AnswerTime)).ToUnixTimeSeconds();
+        var maxTime = ((DateTimeOffset)questionAnswers.Max(qa => qa.AnswerTime)).ToUnixTimeSeconds();
 
         var timeSpan = maxTime - minTime;
-        var maxAnswerTime = timeSpan.TotalMilliseconds;
 
-        var QuestionResponseDto = new QuestionStatsDto(correctAnswer);
+        var questionStatsDto = new QuestionStatsDto(correctAnswer);
+        var playerIdsWithAnswer = new List<string>();
 
         foreach (var qa in questionAnswers) 
         { 
-            var playerStatsDto = CreatePlayerStats(qa,question, minTime, maxAnswerTime);
+            var playerStatsDto = CreatePlayerStats(qa,question, minTime, timeSpan, playerIdsWithAnswer);
             if (playerStatsDto == null)
             {
                 continue;
             }
-            QuestionResponseDto.PlayerScoreBoard.Add(playerStatsDto);
+            questionStatsDto.PlayerScoreBoard.Add(playerStatsDto);
         }
 
-        QuestionResponseDto.PlayerScoreBoard = QuestionResponseDto.PlayerScoreBoard
+        AddPlayersWithoutAnswerToStats(questionStatsDto, room, playerIdsWithAnswer);
+
+        questionStatsDto.PlayerScoreBoard = questionStatsDto.PlayerScoreBoard
             .OrderByDescending(ps => ps.TotalScore)
             .ToList();
 
-        return QuestionResponseDto;
+        return questionStatsDto;
     }
 
-    private static PlayerQuestionStatsDto? CreatePlayerStats(KahootPlayerAnswer answer, KahootQuestion question, DateTime minTime, double maxAnswerTime)
+    private static void AddPlayersWithoutAnswerToStats(QuestionStatsDto questionStatsDto, KahootRoom room, List<string> playerIdsWithAnswer)
+    {
+        foreach (var pId in room.PlayerIds)
+        {
+            if (playerIdsWithAnswer.Contains(pId))
+            {
+                continue;
+            }
+
+            var playerStats = new PlayerQuestionStatsDto();
+            var player = UnitOfWork.Instance.Players.FirstOrDefault(p => p.Id == pId);
+            if (player == null)
+            {
+                continue;
+            }
+            playerStats.PlayerName = player.Name!;
+            playerStats.PlayerAnswerIndex = -1;
+            playerStats.IsCorrectAnswer = false;
+            playerStats.QuestionScore = 0;
+            playerStats.TotalScore = player.Score;
+
+            questionStatsDto.PlayerScoreBoard.Add(playerStats);
+        }
+    }
+
+    private static PlayerQuestionStatsDto? CreatePlayerStats(
+        KahootPlayerAnswer answer,
+        KahootQuestion question,
+        long minTime,
+        long timeSpan,
+        List<string> playerIdsWithAnswer)
     {
         double coef = 1;
         var player = UnitOfWork.Instance.Players.FirstOrDefault(p => p.Id == answer.PlayerId);
@@ -90,13 +122,15 @@ public class ShowQuestionStats
         }
         var playerStats = new PlayerQuestionStatsDto();
 
+        playerIdsWithAnswer.Add(answer.PlayerId);
+
         playerStats.PlayerName = player.Name!;
         playerStats.PlayerAnswerIndex = answer.AnswerIndex;
 
-        if (maxAnswerTime != 0)
+        if (timeSpan != 0)
         {
-            var timeDifference = answer.AnswerTime - minTime;
-            coef = 1 - timeDifference.TotalMicroseconds / maxAnswerTime;
+            var timeDifference = ((DateTimeOffset)answer.AnswerTime).ToUnixTimeSeconds() - minTime;
+            coef = 1 - timeDifference / timeSpan;
         }
 
         if (answer.AnswerIndex == question.CorrectAnswerIndex) 
@@ -107,7 +141,7 @@ public class ShowQuestionStats
 
         if(playerStats.IsCorrectAnswer)
         {
-            playerStats.QuestionScore = (int)Math.Round(1000 * coef);
+            playerStats.QuestionScore = 500 + (int)Math.Round(500 * coef);
             player.Score += playerStats.QuestionScore;
             playerStats.TotalScore = player.Score;
         }

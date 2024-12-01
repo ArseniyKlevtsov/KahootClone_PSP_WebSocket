@@ -13,7 +13,7 @@ public static class ConnectToRoom
     {
         Message? response = null;
 
-        var dto = KahootDtoConvertor.ConvertToDto<OpenRoomDto>(message.Data.ToString());
+        var dto = KahootDtoConvertor.ConvertToDto<ConnectToRoomDto>(message.Data.ToString());
 
         var room = UnitOfWork.Instance.Rooms.FirstOrDefault(r => r.Name == dto.RoomName);
         var player = UnitOfWork.Instance.Players.FirstOrDefault(p => p.Id == client.ID);
@@ -24,12 +24,13 @@ public static class ConnectToRoom
         player!.Score = 0;
         room!.PlayerIds.Add(client.ID);
            
-        response = new Message("ConectedToRoom", CreateResponse(room));
+        response = new Message("ConectedToRoom", CreateResponse(room, client.ID));
         var handlerResponsse = new HandlerResponse(response);
         foreach (var id in room.PlayerIds)
         {
             handlerResponsse.RecipientIds.Add(id);
         }
+        handlerResponsse.RecipientIds.Add(room.CreatorId);
         return handlerResponsse;
     }
 
@@ -69,12 +70,16 @@ public static class ConnectToRoom
         }
     }
 
-    private static ConectedRoomDto CreateResponse(KahootRoom room)
+    private static ConectedRoomDto CreateResponse(KahootRoom room, string ID)
     {
         var response = new ConectedRoomDto();
 
         var creator = UnitOfWork.Instance.Players.FirstOrDefault(p => p.Id == room.CreatorId);
+        var connectedPlayer = UnitOfWork.Instance.Players.FirstOrDefault(p => p.Id == ID);
         response.CreatorName = creator?.Name;
+        response.ConectedPlayerName = connectedPlayer?.Name;
+
+        response.RoomName = room.Name;
 
         foreach (var id in room.PlayerIds)
         {
