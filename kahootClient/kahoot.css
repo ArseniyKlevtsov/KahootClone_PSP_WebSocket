@@ -1,0 +1,81 @@
+body, html {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    background-color: #800566;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; 
+
+    border: 2px solid #000; 
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.form-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Высота на весь экран */
+}
+
+.enter-form {
+    background-color: rgba(213, 213, 194, 0.9);
+    border-radius: 20px;
+    border: 2px solid rgba(17, 17, 14, 0.9);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.room-form-btn {
+    flex: 1; /* Занимает равную ширину */
+    margin: 0 20px; /* Отступы между кнопками */
+    width: 100px;
+}
+
+.room-input {
+    width: 250px;
+}
+.navbar {
+    width: 100%;
+    background-color: #333;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    top: 0;
+    left: 0;
+}
+.main-container {
+    width: 1000px;
+    margin: 10px auto;
+    padding: 20px;
+    background-color: #f4f4f4;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    min-height: 100vh;
+}
+
+.no-bullets {
+    list-style-type: none; /* Убираем стандартные маркеры списка */
+    padding: 0; /* Убираем отступы */
+    margin: 0; /* Убираем отступы */
+}
+
+.form-label {
+    color: #800566;
+}
+.btn-purple {
+    background-color: #6f2c91;
+    color: white;
+}
+.btn-purple:hover {
+    background-color: #5b237e;
+}
